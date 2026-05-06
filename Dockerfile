@@ -1,0 +1,5 @@
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+COPY target/vitalsense-0.0.1-SNAPSHOT.jat app.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-java","app.jar"]
