@@ -31,9 +31,8 @@ public class Appointment {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AppointmentType type;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private AppointmentStatus status;
+
+    @Column
+    private String meetLink;
 }

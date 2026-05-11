@@ -46,7 +46,6 @@ public class AppointmentServiceTest {
         requestDTO.setPatientId(1L);
         requestDTO.setDoctorId(1L);
         requestDTO.setScheduledDate(LocalDateTime.now().plusDays(1));
-        requestDTO.setType(AppointmentType.VIRTUAL);
 
         patient = new Patient();
         patient.setPatientId(1L);
@@ -66,6 +65,8 @@ public class AppointmentServiceTest {
 
         assertNotNull(response);
         assertEquals(AppointmentStatus.CONFIRMED, response.getStatus());
+        assertNotNull(response.getMeetLink());
+        assertTrue(response.getMeetLink().startsWith("https://meet.vitalsense.com/"));
         verify(appointmentRepository, times(1)).save(any(Appointment.class));
     }
 
