@@ -28,7 +28,13 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/api/doctors/**",
                                 "/api/availability/**",
-                                "/api/appointments/**"
+                                "/api/appointments/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
                         )
                         .permitAll()
                         .anyRequest()
