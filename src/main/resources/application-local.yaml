@@ -16,3 +16,13 @@ spring:
     init:
       mode: always
       platform: postgres
+security:
+  oauth2:
+     client:
+        registration:
+         google:
+            client-id: ${GOOGLE_CLIENT_ID:pon_tu_id_de_prueba}
+            client-secret: ${GOOGLE_CLIENT_SECRET:pon_tu_secret_de_prueba}
+            scope:
+              - email
+              - profile
