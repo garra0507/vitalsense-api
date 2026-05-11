@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +51,7 @@ public class AppointmentService {
                 .patient(patient)
                 .doctor(doctor)
                 .scheduledDate(request.getScheduledDate())
-                .status(AppointmentStatus.CONFIRMED)
+                .status(AppointmentStatus.PENDING)
                 .meetLink(generateMeetLink())
                 .build();
 
@@ -58,8 +60,26 @@ public class AppointmentService {
         return mapToResponse(savedAppointment);
     }
 
+    public AppointmentResponseDTO getAppointmentById(Long id) {
+        return appointmentRepository.findById(id)
+                .map(this::mapToResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
+    }
+
+    public List<AppointmentResponseDTO> getAppointmentsByPatientId(Long patientId) {
+        return appointmentRepository.findByPatientPatientId(patientId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<AppointmentResponseDTO> getAppointmentsByDoctorId(Long doctorId) {
+        return appointmentRepository.findByDoctorDoctorId(doctorId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     private String generateMeetLink() {
-        return "https://meet.vitalsense.com/" + UUID.randomUUID().toString().substring(0, 8);
+        return "https://meet.vitalsense.com/" + UUID.randomUUID().toString();
     }
 
     private AppointmentResponseDTO mapToResponse(Appointment appointment) {

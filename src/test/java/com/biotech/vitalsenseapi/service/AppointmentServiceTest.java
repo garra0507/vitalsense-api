@@ -64,7 +64,7 @@ public class AppointmentServiceTest {
         AppointmentResponseDTO response = appointmentService.scheduleAppointment(requestDTO);
 
         assertNotNull(response);
-        assertEquals(AppointmentStatus.CONFIRMED, response.getStatus());
+        assertEquals(AppointmentStatus.PENDING, response.getStatus());
         assertNotNull(response.getMeetLink());
         assertTrue(response.getMeetLink().startsWith("https://meet.vitalsense.com/"));
         verify(appointmentRepository, times(1)).save(any(Appointment.class));
