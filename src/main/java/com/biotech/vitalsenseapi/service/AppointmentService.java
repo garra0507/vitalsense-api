@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -48,13 +49,17 @@ public class AppointmentService {
                 .patient(patient)
                 .doctor(doctor)
                 .scheduledDate(request.getScheduledDate())
-                .type(request.getType())
-                .status(AppointmentStatus.CONFIRMED) // Defaulting to CONFIRMED as per simple implementation
+                .status(AppointmentStatus.CONFIRMED)
+                .meetLink(generateMeetLink())
                 .build();
 
         Appointment savedAppointment = appointmentRepository.save(appointment);
 
         return mapToResponse(savedAppointment);
+    }
+
+    private String generateMeetLink() {
+        return "https://meet.vitalsense.com/" + UUID.randomUUID().toString().substring(0, 8);
     }
 
     private AppointmentResponseDTO mapToResponse(Appointment appointment) {
@@ -63,8 +68,8 @@ public class AppointmentService {
         response.setPatientId(appointment.getPatient().getPatientId());
         response.setDoctorId(appointment.getDoctor().getDoctorId());
         response.setScheduledDate(appointment.getScheduledDate());
-        response.setType(appointment.getType());
         response.setStatus(appointment.getStatus());
+        response.setMeetLink(appointment.getMeetLink());
         return response;
     }
 }
