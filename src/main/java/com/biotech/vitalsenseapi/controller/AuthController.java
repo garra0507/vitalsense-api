@@ -2,6 +2,7 @@ package com.biotech.vitalsenseapi.controller;
 
 import com.biotech.vitalsenseapi.dto.LoginRequest;
 import com.biotech.vitalsenseapi.dto.RegisterRequest;
+import com.biotech.vitalsenseapi.dto.UserResponse;
 import com.biotech.vitalsenseapi.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -30,5 +31,10 @@ public class AuthController {
             @RequestBody LoginRequest request
     ) {
         return authService.login(request);
+    }
+
+    @GetMapping("/me")
+    public UserResponse getMe() {
+        return authService.getMe();
     }
 }
