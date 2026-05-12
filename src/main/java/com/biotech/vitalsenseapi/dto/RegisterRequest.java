@@ -11,4 +11,15 @@ public class RegisterRequest {
     private String firstName;
     private String lastName;
     private String role;
+
+    // Patient specific fields
+    private Integer age;
+    private String gender;
+    private String emergencyContact;
+
+    // Doctor specific fields
+    private String specialty;
+    private Integer yearsOfExperience;
+    private Double consultationFee;
+    private String biography;
 }

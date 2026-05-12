@@ -48,11 +48,18 @@ public class AuthService {
         if ("PATIENT".equalsIgnoreCase(savedUser.getRole())) {
             Patient patient = Patient.builder()
                     .user(savedUser)
+                    .age(request.getAge())
+                    .gender(request.getGender())
+                    .emergencyContact(request.getEmergencyContact())
                     .build();
             patientRepository.save(patient);
         } else if ("DOCTOR".equalsIgnoreCase(savedUser.getRole())) {
             Doctor doctor = Doctor.builder()
                     .user(savedUser)
+                    .specialty(request.getSpecialty())
+                    .yearsOfExperience(request.getYearsOfExperience())
+                    .consultationFee(request.getConsultationFee())
+                    .biography(request.getBiography())
                     .build();
             doctorRepository.save(doctor);
         }
