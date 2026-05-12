@@ -1,7 +1,8 @@
 package com.biotech.vitalsenseapi.controller;
 
 import com.biotech.vitalsenseapi.dto.LoginRequest;
-import com.biotech.vitalsenseapi.dto.RegisterRequest;
+import com.biotech.vitalsenseapi.dto.PatientRegisterRequest;
+import com.biotech.vitalsenseapi.dto.DoctorRegisterRequest;
 import com.biotech.vitalsenseapi.dto.UserResponse;
 import com.biotech.vitalsenseapi.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,18 @@ public class AuthController {
         return "FUNCIONA";
     }
 
-    @PostMapping("/register")
-    public String register(
-            @RequestBody RegisterRequest request
+    @PostMapping("/register/patient")
+    public String registerPatient(
+            @RequestBody PatientRegisterRequest request
     ) {
-        return authService.register(request);
+        return authService.registerPatient(request);
+    }
+
+    @PostMapping("/register/doctor")
+    public String registerDoctor(
+            @RequestBody DoctorRegisterRequest request
+    ) {
+        return authService.registerDoctor(request);
     }
 
     @PostMapping("/login")

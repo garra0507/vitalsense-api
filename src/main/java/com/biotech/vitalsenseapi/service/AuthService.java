@@ -1,7 +1,8 @@
 package com.biotech.vitalsenseapi.service;
 
 import com.biotech.vitalsenseapi.dto.LoginRequest;
-import com.biotech.vitalsenseapi.dto.RegisterRequest;
+import com.biotech.vitalsenseapi.dto.PatientRegisterRequest;
+import com.biotech.vitalsenseapi.dto.DoctorRegisterRequest;
 import com.biotech.vitalsenseapi.dto.UserResponse;
 import com.biotech.vitalsenseapi.model.Doctor;
 import com.biotech.vitalsenseapi.model.Patient;
@@ -28,46 +29,58 @@ public class AuthService {
     private final JwtService jwtService;
 
     @Transactional
-    public String register(RegisterRequest request) {
-
+    public String registerPatient(PatientRegisterRequest request) {
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
-                .password(
-                        passwordEncoder.encode(request.getPassword())
-                )
+                .password(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .role(request.getRole())
+                .role("PATIENT")
                 .active(true)
                 .build();
 
         User savedUser = userRepository.save(user);
 
-        // Auto-create profile based on role
-        if ("PATIENT".equalsIgnoreCase(savedUser.getRole())) {
-            Patient patient = Patient.builder()
-                    .user(savedUser)
-                    .age(request.getAge())
-                    .gender(request.getGender())
-                    .emergencyContact(request.getEmergencyContact())
-                    .build();
-            patientRepository.save(patient);
-        } else if ("DOCTOR".equalsIgnoreCase(savedUser.getRole())) {
-            Doctor doctor = Doctor.builder()
-                    .user(savedUser)
-                    .specialty(request.getSpecialty())
-                    .yearsOfExperience(request.getYearsOfExperience())
-                    .consultationFee(request.getConsultationFee())
-                    .biography(request.getBiography())
-                    .build();
-            doctorRepository.save(doctor);
-        }
+        Patient patient = Patient.builder()
+                .user(savedUser)
+                .age(request.getAge())
+                .gender(request.getGender())
+                .emergencyContact(request.getEmergencyContact())
+                .build();
+        patientRepository.save(patient);
 
-        return "Usuario registrado";
+        return "Paciente registrado con éxito";
+    }
+
+    @Transactional
+    public String registerDoctor(DoctorRegisterRequest request) {
+        User user = User.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .role("DOCTOR")
+                .active(true)
+                .build();
+
+        User savedUser = userRepository.save(user);
+
+        Doctor doctor = Doctor.builder()
+                .user(savedUser)
+                .specialty(request.getSpecialty())
+                .yearsOfExperience(request.getYearsOfExperience())
+                .consultationFee(request.getConsultationFee())
+                .biography(request.getBiography())
+                .build();
+        doctorRepository.save(doctor);
+
+        return "Doctor registrado con éxito";
     }
 
     public String login(LoginRequest request) {
+        // ... (login code remains the same)
 
         User user = userRepository.findByEmail(
                 request.getEmail()
