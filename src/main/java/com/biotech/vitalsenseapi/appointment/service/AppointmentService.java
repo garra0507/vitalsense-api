@@ -1,5 +1,6 @@
 package com.biotech.vitalsenseapi.appointment.service;
 
+import com.biotech.vitalsenseapi.appointment.dto.RescheduleAppointmentDTO;
 import com.biotech.vitalsenseapi.appointment.model.Appointment;
 import com.biotech.vitalsenseapi.appointment.model.AppointmentStatus;
 import com.biotech.vitalsenseapi.appointment.dto.AppointmentRequestDTO;
@@ -94,5 +95,71 @@ public class AppointmentService {
         response.setStatus(appointment.getStatus());
         response.setMeetLink(appointment.getMeetLink());
         return response;
+    }
+    @Transactional
+    public AppointmentResponseDTO cancelAppointment(Long appointmentId) {
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Appointment not found with id: " + appointmentId
+                ));
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new ValidationException("Appointment is already cancelled.");
+        }
+
+        if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
+            throw new ValidationException("Completed appointments cannot be cancelled.");
+        }
+
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+
+        Appointment updatedAppointment = appointmentRepository.save(appointment);
+
+        return mapToResponse(updatedAppointment);
+    }
+
+    @Transactional
+    public AppointmentResponseDTO rescheduleAppointment(
+            Long appointmentId,
+            RescheduleAppointmentDTO request
+    ) {
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Appointment not found with id: " + appointmentId
+                ));
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new ValidationException(
+                    "Cancelled appointments cannot be rescheduled."
+            );
+        }
+
+        if (request.getNewScheduledDate().isBefore(LocalDateTime.now())) {
+            throw new ValidationException(
+                    "New scheduled date must be in the future."
+            );
+        }
+
+        appointmentRepository
+                .findByDoctorDoctorIdAndScheduledDate(
+                        appointment.getDoctor().getDoctorId(),
+                        request.getNewScheduledDate()
+                )
+                .ifPresent(a -> {
+                    if (!a.getAppointmentId().equals(appointmentId)) {
+                        throw new AppointmentConflictException(
+                                "Doctor already has an appointment at this time."
+                        );
+                    }
+                });
+
+        appointment.setScheduledDate(request.getNewScheduledDate());
+        appointment.setStatus(AppointmentStatus.RESCHEDULED);
+
+        Appointment updatedAppointment = appointmentRepository.save(appointment);
+
+        return mapToResponse(updatedAppointment);
     }
 }

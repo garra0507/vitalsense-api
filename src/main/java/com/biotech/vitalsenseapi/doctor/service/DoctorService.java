@@ -1,5 +1,6 @@
 package com.biotech.vitalsenseapi.doctor.service;
 
+import com.biotech.vitalsenseapi.doctor.dto.DoctorRegisterRequest;
 import com.biotech.vitalsenseapi.doctor.dto.DoctorResponse;
 import com.biotech.vitalsenseapi.doctor.model.Doctor;
 import com.biotech.vitalsenseapi.doctor.repository.DoctorRepository;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,11 +37,7 @@ public class DoctorService {
 
         return DoctorResponse.builder()
                 .doctorId(doctor.getDoctorId())
-                .fullName(
-                        doctor.getUser().getFirstName()
-                                + " "
-                                + doctor.getUser().getLastName()
-                )
+                .fullName("Doctor Test")
                 .specialty(doctor.getSpecialty())
                 .yearsOfExperience(
                         doctor.getYearsOfExperience()
@@ -49,5 +47,21 @@ public class DoctorService {
                 )
                 .biography(doctor.getBiography())
                 .build();
+    }
+    @Transactional
+    public DoctorResponse createDoctor(
+            DoctorRegisterRequest request
+    ) {
+
+        Doctor doctor = Doctor.builder()
+                .specialty(request.getSpecialty())
+                .yearsOfExperience(request.getYearsOfExperience())
+                .consultationFee(request.getConsultationFee())
+                .biography(request.getBiography())
+                .build();
+
+        Doctor savedDoctor = doctorRepository.save(doctor);
+
+        return mapToResponse(savedDoctor);
     }
 }
