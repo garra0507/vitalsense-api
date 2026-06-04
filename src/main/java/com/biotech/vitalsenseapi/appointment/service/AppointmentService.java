@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.biotech.vitalsenseapi.appointment.model.AppointmentPaymentStatus;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +57,7 @@ public class AppointmentService {
                 .doctor(doctor)
                 .scheduledDate(request.getScheduledDate())
                 .status(AppointmentStatus.PENDING)
+                .paymentStatus(AppointmentPaymentStatus.PENDING)
                 .meetLink(generateMeetLink())
                 .build();
 
@@ -94,6 +96,7 @@ public class AppointmentService {
         response.setScheduledDate(appointment.getScheduledDate());
         response.setStatus(appointment.getStatus());
         response.setMeetLink(appointment.getMeetLink());
+        response.setPaymentStatus(appointment.getPaymentStatus());
         return response;
     }
     @Transactional

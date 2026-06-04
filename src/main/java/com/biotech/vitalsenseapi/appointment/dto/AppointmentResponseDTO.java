@@ -1,5 +1,6 @@
 package com.biotech.vitalsenseapi.appointment.dto;
 
+import com.biotech.vitalsenseapi.appointment.model.AppointmentPaymentStatus;
 import com.biotech.vitalsenseapi.appointment.model.AppointmentStatus;
 import lombok.Data;
 
@@ -12,5 +13,6 @@ public class AppointmentResponseDTO {
     private Long doctorId;
     private LocalDateTime scheduledDate;
     private AppointmentStatus status;
+    private AppointmentPaymentStatus paymentStatus;
     private String meetLink;
 }
