@@ -35,6 +35,10 @@ public class Appointment {
     @Column(nullable = false)
     private AppointmentStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AppointmentPaymentStatus paymentStatus;
+
     @Column
     private String meetLink;
 }
