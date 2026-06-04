@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.biotech.vitalsenseapi.appointment.dto.RescheduleAppointmentDTO;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -35,5 +36,24 @@ public class AppointmentController {
     @GetMapping("/doctor/{doctorId}")
     public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByDoctorId(@PathVariable Long doctorId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByDoctorId(doctorId));
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<AppointmentResponseDTO> cancelAppointment(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(
+                appointmentService.cancelAppointment(id)
+        );
+    }
+
+    @PutMapping("/{id}/reschedule")
+    public ResponseEntity<AppointmentResponseDTO> rescheduleAppointment(
+            @PathVariable Long id,
+            @RequestBody RescheduleAppointmentDTO request
+    ) {
+        return ResponseEntity.ok(
+                appointmentService.rescheduleAppointment(id, request)
+        );
     }
 }
