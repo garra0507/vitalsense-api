@@ -66,6 +66,10 @@ public class PaymentService {
                 AppointmentPaymentStatus.PAID
         );
 
+        appointment.setStatus(
+                AppointmentStatus.COMPLETED
+        );
+
         appointmentRepository.save(appointment);
 
         return mapToResponse(savedPayment);
