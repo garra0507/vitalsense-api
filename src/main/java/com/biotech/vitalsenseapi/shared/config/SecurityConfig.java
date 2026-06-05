@@ -1,4 +1,4 @@
-package com.biotech.vitalsenseapi.auth.config;
+package com.biotech.vitalsenseapi.shared.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,22 +24,38 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/api/doctors/**",
-                                "/api/payments/**",
-                                "/api/patients/**",
-                                "/api/availability/**",
-                                "/api/appointments/**",
-                                "/api/prescriptions/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/swagger-resources/**",
-                                "/webjars/**"
+                                "/api/medical-exams/**"
                         )
                         .permitAll()
+
+                        .requestMatchers(
+                                "/api/doctors/search",
+                                "/api/appointments/calendar/**"
+                        )
+                        .permitAll()
+
+                        .requestMatchers(
+                                "/api/medical-exams/**"
+                        )
+                        .hasAnyRole("DOCTOR", "PATIENT")
+
+                        .requestMatchers(
+                                "/api/payments/**"
+                        )
+                        .hasRole("PATIENT")
+
+                        .requestMatchers(
+                                "/api/prescriptions/**"
+                        )
+                        .hasRole("DOCTOR")
+
                         .anyRequest()
                         .authenticated()
                 )
