@@ -1,4 +1,4 @@
-package com.biotech.vitalsenseapi.shared.config;
+package com.biotech.vitalsenseapi.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,36 +26,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers(
-                                "/api/auth/**",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/api/medical-exams/**",
-                                "/api/reminders/**"
+                                "/**"
                         )
                         .permitAll()
-
-                        .requestMatchers(
-                                "/api/doctors/search",
-                                "/api/appointments/calendar/**"
-                        )
-                        .permitAll()
-
-                        .requestMatchers(
-                                "/api/medical-exams/**"
-                        )
-                        .hasAnyRole("DOCTOR", "PATIENT")
-
-                        .requestMatchers(
-                                "/api/payments/**"
-                        )
-                        .hasRole("PATIENT")
-
-                        .requestMatchers(
-                                "/api/prescriptions/**"
-                        )
-                        .hasRole("DOCTOR")
 
                         .anyRequest()
                         .authenticated()
