@@ -2,6 +2,7 @@ package com.biotech.vitalsenseapi.auth.service;
 
 import com.biotech.vitalsenseapi.auth.dto.LoginRequest;
 import com.biotech.vitalsenseapi.auth.dto.RegisterRequest;
+import com.biotech.vitalsenseapi.auth.dto.SocialLoginRequest;
 import com.biotech.vitalsenseapi.auth.model.User;
 import com.biotech.vitalsenseapi.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,5 +56,34 @@ public class AuthService {
         }
 
         return jwtService.generateToken(user.getEmail());
+    }
+    public String socialLogin(
+            SocialLoginRequest request
+    ) {
+
+        User user = userRepository
+                .findByEmail(request.getEmail())
+                .orElse(null);
+
+        if (user == null) {
+
+            user = User.builder()
+                    .email(request.getEmail())
+                    .username(request.getEmail())
+                    .firstName(request.getFirstName())
+                    .lastName(request.getLastName())
+                    .password(
+                            passwordEncoder.encode("SOCIAL_LOGIN")
+                    )
+                    .role("PATIENT")
+                    .active(true)
+                    .build();
+
+            userRepository.save(user);
+        }
+
+        return jwtService.generateToken(
+                user.getEmail()
+        );
     }
 }

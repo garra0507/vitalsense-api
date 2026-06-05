@@ -2,8 +2,10 @@ package com.biotech.vitalsenseapi.auth.controller;
 
 import com.biotech.vitalsenseapi.auth.dto.LoginRequest;
 import com.biotech.vitalsenseapi.auth.dto.RegisterRequest;
+import com.biotech.vitalsenseapi.auth.dto.SocialLoginRequest;
 import com.biotech.vitalsenseapi.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,5 +32,16 @@ public class AuthController {
             @RequestBody LoginRequest request
     ) {
         return authService.login(request);
+    }
+
+    @PostMapping("/social-login")
+    public ResponseEntity<String> socialLogin(
+            @RequestBody
+            SocialLoginRequest request
+    ) {
+
+        return ResponseEntity.ok(
+                authService.socialLogin(request)
+        );
     }
 }
