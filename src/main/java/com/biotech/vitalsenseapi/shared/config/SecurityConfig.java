@@ -31,7 +31,8 @@ public class SecurityConfig {
                                 "/v3/api-docs",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/api/medical-exams/**"
+                                "/api/medical-exams/**",
+                                "/api/reminders/**"
                         )
                         .permitAll()
 
