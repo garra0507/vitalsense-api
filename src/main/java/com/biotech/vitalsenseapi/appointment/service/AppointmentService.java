@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import com.biotech.vitalsenseapi.appointment.model.AppointmentPaymentStatus;
+import com.biotech.vitalsenseapi.appointment.dto.CalendarAppointmentDTO;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -164,5 +166,51 @@ public class AppointmentService {
         Appointment updatedAppointment = appointmentRepository.save(appointment);
 
         return mapToResponse(updatedAppointment);
+    }
+
+    public List<CalendarAppointmentDTO>
+    getAppointmentsCalendarByDoctor(
+            Long doctorId
+    ) {
+
+        List<Appointment> appointments =
+                appointmentRepository
+                        .findByDoctorDoctorIdOrderByScheduledDateAsc(
+                                doctorId
+                        );
+
+        return appointments.stream()
+                .map(appointment ->
+                        CalendarAppointmentDTO.builder()
+                                .appointmentId(
+                                        appointment.getAppointmentId()
+                                )
+                                .patientName(
+                                        appointment.getPatient()
+                                                .getUser()
+                                                .getFirstName()
+                                                + " "
+                                                + appointment.getPatient()
+                                                .getUser()
+                                                .getLastName()
+                                )
+                                .doctorName(
+                                        appointment.getDoctor()
+                                                .getUser()
+                                                .getFirstName()
+                                                + " "
+                                                + appointment.getDoctor()
+                                                .getUser()
+                                                .getLastName()
+                                )
+                                .scheduledDate(
+                                        appointment.getScheduledDate()
+                                )
+                                .status(
+                                        appointment.getStatus()
+                                )
+                                .build()
+                )
+                .toList();
     }
 }
