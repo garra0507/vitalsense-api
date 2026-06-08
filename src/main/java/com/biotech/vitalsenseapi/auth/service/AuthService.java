@@ -1,8 +1,9 @@
 package com.biotech.vitalsenseapi.auth.service;
 
 import com.biotech.vitalsenseapi.auth.dto.LoginRequest;
-import com.biotech.vitalsenseapi.auth.dto.RegisterRequest;
 import com.biotech.vitalsenseapi.auth.dto.SocialLoginRequest;
+import com.biotech.vitalsenseapi.auth.dto.UserResponse;
+import com.biotech.vitalsenseapi.auth.mapper.AuthMapper;
 import com.biotech.vitalsenseapi.auth.model.Role;
 import com.biotech.vitalsenseapi.auth.model.User;
 import com.biotech.vitalsenseapi.auth.repository.UserRepository;
@@ -13,6 +14,7 @@ import com.biotech.vitalsenseapi.patient.dto.PatientRegisterRequest;
 import com.biotech.vitalsenseapi.patient.model.Patient;
 import com.biotech.vitalsenseapi.patient.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +26,9 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
+    private final AuthMapper authMapper;
 
     private final BCryptPasswordEncoder passwordEncoder;
-
     private final JwtService jwtService;
 
     @Transactional
@@ -91,6 +93,25 @@ public class AuthService {
         }
 
         return jwtService.generateToken(user.getEmail());
+    }
+
+    public UserResponse getMe() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Long profileId = null;
+        if (user.getRole() == Role.PATIENT) {
+            profileId = patientRepository.findByUserUserId(user.getUserId())
+                    .map(Patient::getPatientId)
+                    .orElse(null);
+        } else if (user.getRole() == Role.DOCTOR) {
+            profileId = doctorRepository.findByUserUserId(user.getUserId())
+                    .map(Doctor::getDoctorId)
+                    .orElse(null);
+        }
+
+        return authMapper.toUserResponse(user, profileId);
     }
 
     @Transactional

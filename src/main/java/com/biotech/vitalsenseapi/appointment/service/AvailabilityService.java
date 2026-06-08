@@ -7,6 +7,7 @@ import com.biotech.vitalsenseapi.appointment.model.Availability;
 import com.biotech.vitalsenseapi.doctor.model.Doctor;
 import com.biotech.vitalsenseapi.appointment.repository.AvailabilityRepository;
 import com.biotech.vitalsenseapi.doctor.repository.DoctorRepository;
+import com.biotech.vitalsenseapi.shared.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,16 @@ public class AvailabilityService {
         ).orElseThrow(
                 () -> new RuntimeException("Doctor not found")
         );
+
+        // Logic Gap Fix: Check for overlapping availability
+        List<Availability> existingAvailabilities = availabilityRepository.findByDoctorDoctorId(doctor.getDoctorId());
+        boolean overlaps = existingAvailabilities.stream().anyMatch(a -> 
+            (request.getStartTime().isBefore(a.getEndTime()) && request.getEndTime().isAfter(a.getStartTime()))
+        );
+
+        if (overlaps) {
+            throw new ValidationException("This availability slot overlaps with an existing one.");
+        }
 
         Availability availability =
                 Availability.builder()

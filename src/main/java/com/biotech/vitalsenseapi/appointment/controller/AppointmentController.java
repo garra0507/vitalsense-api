@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.biotech.vitalsenseapi.appointment.dto.RescheduleAppointmentDTO;
 import com.biotech.vitalsenseapi.appointment.dto.CalendarAppointmentDTO;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -20,7 +21,7 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
 
     @PostMapping
-    public ResponseEntity<AppointmentResponseDTO> scheduleAppointment(@RequestBody AppointmentRequestDTO request) {
+    public ResponseEntity<AppointmentResponseDTO> scheduleAppointment(@Valid @RequestBody AppointmentRequestDTO request) {
         return new ResponseEntity<>(appointmentService.scheduleAppointment(request), HttpStatus.CREATED);
     }
 
