@@ -1,6 +1,5 @@
 package com.biotech.vitalsenseapi.doctor.controller;
 
-import com.biotech.vitalsenseapi.doctor.dto.DoctorRegisterRequest;
 import com.biotech.vitalsenseapi.doctor.dto.DoctorResponse;
 import com.biotech.vitalsenseapi.doctor.service.DoctorService;
 import lombok.RequiredArgsConstructor;
@@ -19,17 +18,6 @@ public class DoctorController {
     public List<DoctorResponse> searchDoctors(
             @RequestParam String specialty
     ) {
-
-        return doctorService.searchDoctors(
-                specialty
-        );
-    }
-
-    @PostMapping
-    public DoctorResponse createDoctor(
-            @RequestBody DoctorRegisterRequest request
-    ) {
-
-        return doctorService.createDoctor(request);
+        return doctorService.searchDoctors(specialty);
     }
 }

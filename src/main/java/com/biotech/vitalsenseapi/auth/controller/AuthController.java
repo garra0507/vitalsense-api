@@ -2,9 +2,11 @@ package com.biotech.vitalsenseapi.auth.controller;
 
 import com.biotech.vitalsenseapi.auth.dto.LoginRequest;
 import com.biotech.vitalsenseapi.auth.dto.SocialLoginRequest;
+import com.biotech.vitalsenseapi.auth.dto.UserResponse;
 import com.biotech.vitalsenseapi.auth.service.AuthService;
 import com.biotech.vitalsenseapi.doctor.dto.DoctorRegisterRequest;
 import com.biotech.vitalsenseapi.patient.dto.PatientRegisterRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,33 +25,34 @@ public class AuthController {
 
     @PostMapping("/register/patient")
     public ResponseEntity<String> registerPatient(
-            @RequestBody PatientRegisterRequest request
+            @Valid @RequestBody PatientRegisterRequest request
     ) {
         return ResponseEntity.ok(authService.registerPatient(request));
     }
 
     @PostMapping("/register/doctor")
     public ResponseEntity<String> registerDoctor(
-            @RequestBody DoctorRegisterRequest request
+            @Valid @RequestBody DoctorRegisterRequest request
     ) {
         return ResponseEntity.ok(authService.registerDoctor(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(
-            @RequestBody LoginRequest request
+            @Valid @RequestBody LoginRequest request
     ) {
         return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/social-login")
     public ResponseEntity<String> socialLogin(
-            @RequestBody
-            SocialLoginRequest request
+            @RequestBody SocialLoginRequest request
     ) {
+        return ResponseEntity.ok(authService.socialLogin(request));
+    }
 
-        return ResponseEntity.ok(
-                authService.socialLogin(request)
-        );
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getMe() {
+        return ResponseEntity.ok(authService.getMe());
     }
 }
