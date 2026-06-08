@@ -2,6 +2,7 @@ package com.biotech.vitalsenseapi.doctor.service;
 
 import com.biotech.vitalsenseapi.doctor.dto.DoctorRegisterRequest;
 import com.biotech.vitalsenseapi.doctor.dto.DoctorResponse;
+import com.biotech.vitalsenseapi.doctor.mapper.DoctorMapper;
 import com.biotech.vitalsenseapi.doctor.model.Doctor;
 import com.biotech.vitalsenseapi.doctor.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
+    private final DoctorMapper doctorMapper;
 
     public List<DoctorResponse> searchDoctors(
             String specialty
@@ -27,27 +29,10 @@ public class DoctorService {
                         );
 
         return doctors.stream()
-                .map(this::mapToResponse)
+                .map(doctorMapper::toResponse)
                 .toList();
     }
 
-    private DoctorResponse mapToResponse(
-            Doctor doctor
-    ) {
-
-        return DoctorResponse.builder()
-                .doctorId(doctor.getDoctorId())
-                .fullName("Doctor Test")
-                .specialty(doctor.getSpecialty())
-                .yearsOfExperience(
-                        doctor.getYearsOfExperience()
-                )
-                .consultationFee(
-                        doctor.getConsultationFee()
-                )
-                .biography(doctor.getBiography())
-                .build();
-    }
     @Transactional
     public DoctorResponse createDoctor(
             DoctorRegisterRequest request
@@ -62,6 +47,6 @@ public class DoctorService {
 
         Doctor savedDoctor = doctorRepository.save(doctor);
 
-        return mapToResponse(savedDoctor);
+        return doctorMapper.toResponse(savedDoctor);
     }
 }

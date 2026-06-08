@@ -1,6 +1,7 @@
 package com.biotech.vitalsenseapi.appointment.service;
 
 import com.biotech.vitalsenseapi.appointment.dto.RescheduleAppointmentDTO;
+import com.biotech.vitalsenseapi.appointment.mapper.AppointmentMapper;
 import com.biotech.vitalsenseapi.appointment.model.Appointment;
 import com.biotech.vitalsenseapi.appointment.model.AppointmentStatus;
 import com.biotech.vitalsenseapi.appointment.dto.AppointmentRequestDTO;
@@ -23,7 +24,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import com.biotech.vitalsenseapi.appointment.model.AppointmentPaymentStatus;
 import com.biotech.vitalsenseapi.appointment.dto.CalendarAppointmentDTO;
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +32,7 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
+    private final AppointmentMapper appointmentMapper;
 
     @Transactional
     public AppointmentResponseDTO scheduleAppointment(AppointmentRequestDTO request) {
@@ -65,24 +66,24 @@ public class AppointmentService {
 
         Appointment savedAppointment = appointmentRepository.save(appointment);
 
-        return mapToResponse(savedAppointment);
+        return appointmentMapper.toResponseDTO(savedAppointment);
     }
 
     public AppointmentResponseDTO getAppointmentById(Long id) {
         return appointmentRepository.findById(id)
-                .map(this::mapToResponse)
+                .map(appointmentMapper::toResponseDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
     }
 
     public List<AppointmentResponseDTO> getAppointmentsByPatientId(Long patientId) {
         return appointmentRepository.findByPatientPatientId(patientId).stream()
-                .map(this::mapToResponse)
+                .map(appointmentMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public List<AppointmentResponseDTO> getAppointmentsByDoctorId(Long doctorId) {
         return appointmentRepository.findByDoctorDoctorId(doctorId).stream()
-                .map(this::mapToResponse)
+                .map(appointmentMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
@@ -90,17 +91,6 @@ public class AppointmentService {
         return "https://meet.vitalsense.com/" + UUID.randomUUID().toString();
     }
 
-    private AppointmentResponseDTO mapToResponse(Appointment appointment) {
-        AppointmentResponseDTO response = new AppointmentResponseDTO();
-        response.setAppointmentId(appointment.getAppointmentId());
-        response.setPatientId(appointment.getPatient().getPatientId());
-        response.setDoctorId(appointment.getDoctor().getDoctorId());
-        response.setScheduledDate(appointment.getScheduledDate());
-        response.setStatus(appointment.getStatus());
-        response.setMeetLink(appointment.getMeetLink());
-        response.setPaymentStatus(appointment.getPaymentStatus());
-        return response;
-    }
     @Transactional
     public AppointmentResponseDTO cancelAppointment(Long appointmentId) {
 
@@ -121,7 +111,7 @@ public class AppointmentService {
 
         Appointment updatedAppointment = appointmentRepository.save(appointment);
 
-        return mapToResponse(updatedAppointment);
+        return appointmentMapper.toResponseDTO(updatedAppointment);
     }
 
     @Transactional
@@ -165,7 +155,7 @@ public class AppointmentService {
 
         Appointment updatedAppointment = appointmentRepository.save(appointment);
 
-        return mapToResponse(updatedAppointment);
+        return appointmentMapper.toResponseDTO(updatedAppointment);
     }
 
     public List<CalendarAppointmentDTO>
@@ -180,37 +170,7 @@ public class AppointmentService {
                         );
 
         return appointments.stream()
-                .map(appointment ->
-                        CalendarAppointmentDTO.builder()
-                                .appointmentId(
-                                        appointment.getAppointmentId()
-                                )
-                                .patientName(
-                                        appointment.getPatient()
-                                                .getUser()
-                                                .getFirstName()
-                                                + " "
-                                                + appointment.getPatient()
-                                                .getUser()
-                                                .getLastName()
-                                )
-                                .doctorName(
-                                        appointment.getDoctor()
-                                                .getUser()
-                                                .getFirstName()
-                                                + " "
-                                                + appointment.getDoctor()
-                                                .getUser()
-                                                .getLastName()
-                                )
-                                .scheduledDate(
-                                        appointment.getScheduledDate()
-                                )
-                                .status(
-                                        appointment.getStatus()
-                                )
-                                .build()
-                )
+                .map(appointmentMapper::toCalendarDTO)
                 .toList();
     }
 }

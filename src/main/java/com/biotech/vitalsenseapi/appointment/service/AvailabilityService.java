@@ -2,6 +2,7 @@ package com.biotech.vitalsenseapi.appointment.service;
 
 import com.biotech.vitalsenseapi.appointment.dto.AvailabilityRequest;
 import com.biotech.vitalsenseapi.appointment.dto.AvailabilityResponse;
+import com.biotech.vitalsenseapi.appointment.mapper.AvailabilityMapper;
 import com.biotech.vitalsenseapi.appointment.model.Availability;
 import com.biotech.vitalsenseapi.doctor.model.Doctor;
 import com.biotech.vitalsenseapi.appointment.repository.AvailabilityRepository;
@@ -16,8 +17,8 @@ import java.util.List;
 public class AvailabilityService {
 
     private final AvailabilityRepository availabilityRepository;
-
     private final DoctorRepository doctorRepository;
+    private final AvailabilityMapper availabilityMapper;
 
     public String createAvailability(
             AvailabilityRequest request
@@ -49,15 +50,7 @@ public class AvailabilityService {
         return availabilityRepository
                 .findByDoctorDoctorId(doctorId)
                 .stream()
-                .map(a -> AvailabilityResponse.builder()
-                        .availabilityId(
-                                a.getAvailabilityId()
-                        )
-                        .startTime(a.getStartTime())
-                        .endTime(a.getEndTime())
-                        .available(a.getAvailable())
-                        .build()
-                )
+                .map(availabilityMapper::toResponseDTO)
                 .toList();
     }
 }

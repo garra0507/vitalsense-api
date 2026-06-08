@@ -6,6 +6,7 @@ import com.biotech.vitalsenseapi.appointment.model.AppointmentStatus;
 import com.biotech.vitalsenseapi.appointment.repository.AppointmentRepository;
 import com.biotech.vitalsenseapi.payment.dto.PaymentRequestDTO;
 import com.biotech.vitalsenseapi.payment.dto.PaymentResponseDTO;
+import com.biotech.vitalsenseapi.payment.mapper.PaymentMapper;
 import com.biotech.vitalsenseapi.payment.model.Payment;
 import com.biotech.vitalsenseapi.payment.repository.PaymentRepository;
 import com.biotech.vitalsenseapi.shared.exception.ResourceNotFoundException;
@@ -21,8 +22,8 @@ import java.time.LocalDateTime;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-
     private final AppointmentRepository appointmentRepository;
+    private final PaymentMapper paymentMapper;
 
     @Transactional
     public PaymentResponseDTO processPayment(
@@ -72,23 +73,6 @@ public class PaymentService {
 
         appointmentRepository.save(appointment);
 
-        return mapToResponse(savedPayment);
-    }
-
-    private PaymentResponseDTO mapToResponse(
-            Payment payment
-    ) {
-
-        return PaymentResponseDTO.builder()
-                .paymentId(payment.getPaymentId())
-                .appointmentId(
-                        payment.getAppointment()
-                                .getAppointmentId()
-                )
-                .amount(payment.getAmount())
-                .paymentMethod(payment.getPaymentMethod())
-                .paymentDate(payment.getPaymentDate())
-                .status(payment.getStatus())
-                .build();
+        return paymentMapper.toResponseDTO(savedPayment);
     }
 }
