@@ -29,7 +29,8 @@ public class User {
 
     private String lastName;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     private Boolean active;
 }

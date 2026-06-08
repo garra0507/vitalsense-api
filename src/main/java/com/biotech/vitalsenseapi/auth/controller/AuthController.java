@@ -1,9 +1,10 @@
 package com.biotech.vitalsenseapi.auth.controller;
 
 import com.biotech.vitalsenseapi.auth.dto.LoginRequest;
-import com.biotech.vitalsenseapi.auth.dto.RegisterRequest;
 import com.biotech.vitalsenseapi.auth.dto.SocialLoginRequest;
 import com.biotech.vitalsenseapi.auth.service.AuthService;
+import com.biotech.vitalsenseapi.doctor.dto.DoctorRegisterRequest;
+import com.biotech.vitalsenseapi.patient.dto.PatientRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,18 +21,25 @@ public class AuthController {
         return "FUNCIONA";
     }
 
-    @PostMapping("/register")
-    public String register(
-            @RequestBody RegisterRequest request
+    @PostMapping("/register/patient")
+    public ResponseEntity<String> registerPatient(
+            @RequestBody PatientRegisterRequest request
     ) {
-        return authService.register(request);
+        return ResponseEntity.ok(authService.registerPatient(request));
+    }
+
+    @PostMapping("/register/doctor")
+    public ResponseEntity<String> registerDoctor(
+            @RequestBody DoctorRegisterRequest request
+    ) {
+        return ResponseEntity.ok(authService.registerDoctor(request));
     }
 
     @PostMapping("/login")
-    public String login(
+    public ResponseEntity<String> login(
             @RequestBody LoginRequest request
     ) {
-        return authService.login(request);
+        return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/social-login")
