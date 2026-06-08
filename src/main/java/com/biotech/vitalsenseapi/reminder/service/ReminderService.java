@@ -4,6 +4,7 @@ import com.biotech.vitalsenseapi.patient.model.Patient;
 import com.biotech.vitalsenseapi.patient.repository.PatientRepository;
 import com.biotech.vitalsenseapi.reminder.dto.ReminderRequestDTO;
 import com.biotech.vitalsenseapi.reminder.dto.ReminderResponseDTO;
+import com.biotech.vitalsenseapi.reminder.mapper.ReminderMapper;
 import com.biotech.vitalsenseapi.reminder.model.Reminder;
 import com.biotech.vitalsenseapi.reminder.repository.ReminderRepository;
 import com.biotech.vitalsenseapi.shared.exception.ResourceNotFoundException;
@@ -18,8 +19,8 @@ import java.util.List;
 public class ReminderService {
 
     private final ReminderRepository reminderRepository;
-
     private final PatientRepository patientRepository;
+    private final ReminderMapper reminderMapper;
 
     public ReminderResponseDTO createReminder(
             ReminderRequestDTO request
@@ -53,7 +54,7 @@ public class ReminderService {
         Reminder savedReminder =
                 reminderRepository.save(reminder);
 
-        return mapToResponse(savedReminder);
+        return reminderMapper.toResponseDTO(savedReminder);
     }
 
     public List<ReminderResponseDTO>
@@ -62,31 +63,7 @@ public class ReminderService {
         return reminderRepository
                 .findByPatientPatientId(patientId)
                 .stream()
-                .map(this::mapToResponse)
+                .map(reminderMapper::toResponseDTO)
                 .toList();
-    }
-
-    private ReminderResponseDTO mapToResponse(
-            Reminder reminder
-    ) {
-
-        return ReminderResponseDTO.builder()
-                .reminderId(reminder.getReminderId())
-                .patientId(
-                        reminder.getPatient()
-                                .getPatientId()
-                )
-                .medicationName(
-                        reminder.getMedicationName()
-                )
-                .frequency(
-                        reminder.getFrequency()
-                )
-                .reminderTime(
-                        reminder.getReminderTime()
-                )
-                .active(reminder.getActive())
-                .createdAt(reminder.getCreatedAt())
-                .build();
     }
 }

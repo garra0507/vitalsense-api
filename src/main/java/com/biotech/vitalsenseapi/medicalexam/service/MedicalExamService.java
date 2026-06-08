@@ -4,6 +4,7 @@ import com.biotech.vitalsenseapi.appointment.model.Appointment;
 import com.biotech.vitalsenseapi.appointment.repository.AppointmentRepository;
 import com.biotech.vitalsenseapi.medicalexam.dto.MedicalExamRequestDTO;
 import com.biotech.vitalsenseapi.medicalexam.dto.MedicalExamResponseDTO;
+import com.biotech.vitalsenseapi.medicalexam.mapper.MedicalExamMapper;
 import com.biotech.vitalsenseapi.medicalexam.model.MedicalExam;
 import com.biotech.vitalsenseapi.medicalexam.repository.MedicalExamRepository;
 import com.biotech.vitalsenseapi.shared.exception.ResourceNotFoundException;
@@ -18,8 +19,8 @@ import java.util.List;
 public class MedicalExamService {
 
     private final MedicalExamRepository medicalExamRepository;
-
     private final AppointmentRepository appointmentRepository;
+    private final MedicalExamMapper medicalExamMapper;
 
     public MedicalExamResponseDTO createMedicalExam(
             MedicalExamRequestDTO request
@@ -45,7 +46,7 @@ public class MedicalExamService {
         MedicalExam savedExam =
                 medicalExamRepository.save(medicalExam);
 
-        return mapToResponse(savedExam);
+        return medicalExamMapper.toResponseDTO(savedExam);
     }
 
     public List<MedicalExamResponseDTO>
@@ -56,23 +57,7 @@ public class MedicalExamService {
                         appointmentId
                 )
                 .stream()
-                .map(this::mapToResponse)
+                .map(medicalExamMapper::toResponseDTO)
                 .toList();
-    }
-
-    private MedicalExamResponseDTO mapToResponse(
-            MedicalExam exam
-    ) {
-
-        return MedicalExamResponseDTO.builder()
-                .examId(exam.getExamId())
-                .appointmentId(
-                        exam.getAppointment()
-                                .getAppointmentId()
-                )
-                .examName(exam.getExamName())
-                .instructions(exam.getInstructions())
-                .createdAt(exam.getCreatedAt())
-                .build();
     }
 }

@@ -5,6 +5,7 @@ import com.biotech.vitalsenseapi.appointment.model.AppointmentStatus;
 import com.biotech.vitalsenseapi.appointment.repository.AppointmentRepository;
 import com.biotech.vitalsenseapi.prescription.dto.PrescriptionRequestDTO;
 import com.biotech.vitalsenseapi.prescription.dto.PrescriptionResponseDTO;
+import com.biotech.vitalsenseapi.prescription.mapper.PrescriptionMapper;
 import com.biotech.vitalsenseapi.prescription.model.Prescription;
 import com.biotech.vitalsenseapi.prescription.repository.PrescriptionRepository;
 import com.biotech.vitalsenseapi.shared.exception.ResourceNotFoundException;
@@ -20,8 +21,8 @@ import java.time.LocalDateTime;
 public class PrescriptionService {
 
     private final PrescriptionRepository prescriptionRepository;
-
     private final AppointmentRepository appointmentRepository;
+    private final PrescriptionMapper prescriptionMapper;
 
     @Transactional
     public PrescriptionResponseDTO createPrescription(
@@ -59,30 +60,6 @@ public class PrescriptionService {
         Prescription savedPrescription =
                 prescriptionRepository.save(prescription);
 
-        return mapToResponse(savedPrescription);
-    }
-
-    private PrescriptionResponseDTO mapToResponse(
-            Prescription prescription
-    ) {
-
-        return PrescriptionResponseDTO.builder()
-                .prescriptionId(
-                        prescription.getPrescriptionId()
-                )
-                .appointmentId(
-                        prescription.getAppointment()
-                                .getAppointmentId()
-                )
-                .medications(
-                        prescription.getMedications()
-                )
-                .instructions(
-                        prescription.getInstructions()
-                )
-                .createdAt(
-                        prescription.getCreatedAt()
-                )
-                .build();
+        return prescriptionMapper.toResponseDTO(savedPrescription);
     }
 }
