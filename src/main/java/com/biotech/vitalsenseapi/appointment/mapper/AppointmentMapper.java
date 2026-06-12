@@ -20,6 +20,7 @@ public class AppointmentMapper {
         response.setStatus(appointment.getStatus());
         response.setMeetLink(appointment.getMeetLink());
         response.setPaymentStatus(appointment.getPaymentStatus());
+        response.setPaymentAmount(appointment.getPaymentAmount());
         return response;
     }
 

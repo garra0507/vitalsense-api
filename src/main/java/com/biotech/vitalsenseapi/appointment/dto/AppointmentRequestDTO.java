@@ -17,4 +17,6 @@ public class AppointmentRequestDTO {
     @NotNull(message = "Scheduled date is required")
     @Future(message = "Appointment must be in the future")
     private LocalDateTime scheduledDate;
+
+    private Double paymentAmount;
 }

@@ -16,6 +16,7 @@ public class PatientMapper {
                 .fullName(patient.getUser().getFirstName() + " " + patient.getUser().getLastName())
                 .age(patient.getAge())
                 .gender(patient.getGender())
+                .balance(patient.getBalance())
                 .emergencyContact(patient.getEmergencyContact())
                 .build();
     }

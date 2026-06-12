@@ -41,4 +41,7 @@ public class Appointment {
 
     @Column
     private String meetLink;
+
+    @Column(nullable = false)
+    private Double paymentAmount;
 }
