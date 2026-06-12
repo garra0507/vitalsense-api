@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import com.biotech.vitalsenseapi.patient.model.Patient;
+import com.biotech.vitalsenseapi.patient.repository.PatientRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final AppointmentRepository appointmentRepository;
+    private final PatientRepository patientRepository;
     private final PaymentMapper paymentMapper;
 
     @Transactional
@@ -52,6 +55,25 @@ public class PaymentService {
             );
         }
 
+        Patient patient = appointment.getPatient();
+
+        if (patient.getBalance() < appointment.getPaymentAmount()) {
+
+            Payment failedPayment = Payment.builder()
+                    .appointment(appointment)
+                    .amount(request.getAmount())
+                    .paymentMethod(request.getPaymentMethod())
+                    .paymentDate(LocalDateTime.now())
+                    .status("PENDING")
+                    .build();
+
+            paymentRepository.save(failedPayment);
+
+            throw new ValidationException(
+                    "Insufficient balance to pay appointment"
+            );
+        }
+
         Payment payment = Payment.builder()
                 .appointment(appointment)
                 .amount(request.getAmount())
@@ -62,6 +84,11 @@ public class PaymentService {
 
         Payment savedPayment =
                 paymentRepository.save(payment);
+
+        patient.setBalance(
+                patient.getBalance()
+                        - appointment.getPaymentAmount()
+        );
 
         appointment.setPaymentStatus(
                 AppointmentPaymentStatus.PAID

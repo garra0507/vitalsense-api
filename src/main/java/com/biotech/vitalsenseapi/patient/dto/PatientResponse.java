@@ -15,5 +15,7 @@ public class PatientResponse {
 
     private String gender;
 
+    private Double balance;
+
     private String emergencyContact;
 }

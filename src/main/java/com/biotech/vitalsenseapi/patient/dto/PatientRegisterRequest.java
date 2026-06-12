@@ -29,5 +29,8 @@ public class PatientRegisterRequest {
 
     private String gender;
 
+    @Min(value = 0, message = "Balance cannot be negative")
+    private Double balance;
+
     private String emergencyContact;
 }

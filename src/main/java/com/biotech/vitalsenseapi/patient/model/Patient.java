@@ -19,6 +19,8 @@ public class Patient {
 
     private Integer age;
 
+    private Double balance;
+
     private String gender;
 
     private String emergencyContact;

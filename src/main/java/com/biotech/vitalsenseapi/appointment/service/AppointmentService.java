@@ -67,6 +67,7 @@ public class AppointmentService {
                 .patient(patient)
                 .doctor(doctor)
                 .scheduledDate(request.getScheduledDate())
+                .paymentAmount(request.getPaymentAmount())
                 .status(AppointmentStatus.PENDING)
                 .paymentStatus(AppointmentPaymentStatus.PENDING)
                 .meetLink(generateMeetLink())

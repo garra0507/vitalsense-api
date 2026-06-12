@@ -23,6 +23,7 @@ public class PatientService {
                 .age(request.getAge())
                 .gender(request.getGender())
                 .emergencyContact(request.getEmergencyContact())
+                .balance(request.getBalance())
                 .build();
 
         Patient savedPatient = patientRepository.save(patient);

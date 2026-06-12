@@ -15,4 +15,5 @@ public class AppointmentResponseDTO {
     private AppointmentStatus status;
     private AppointmentPaymentStatus paymentStatus;
     private String meetLink;
+    private Double paymentAmount;
 }
