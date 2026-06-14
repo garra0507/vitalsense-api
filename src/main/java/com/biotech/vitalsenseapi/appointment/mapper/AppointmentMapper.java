@@ -15,6 +15,7 @@ public class AppointmentMapper {
         AppointmentResponseDTO response = new AppointmentResponseDTO();
         response.setAppointmentId(appointment.getAppointmentId());
         response.setPatientId(appointment.getPatient().getPatientId());
+        response.setPatientName(appointment.getPatient().getUser().getFirstName() + " " + appointment.getPatient().getUser().getLastName());
         response.setDoctorId(appointment.getDoctor().getDoctorId());
         response.setDoctorName(appointment.getDoctor().getUser().getFirstName() + " " + appointment.getDoctor().getUser().getLastName());
         response.setDoctorSpecialty(appointment.getDoctor().getSpecialty());
