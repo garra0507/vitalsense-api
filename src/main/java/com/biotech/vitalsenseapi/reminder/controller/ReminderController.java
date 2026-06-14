@@ -40,4 +40,15 @@ public class ReminderController {
                         .getRemindersByPatient(patientId)
         );
     }
-}
+
+    @PatchMapping("/{reminderId}/toggle")
+    public ResponseEntity<ReminderResponseDTO> toggleReminder(@PathVariable Long reminderId) {
+        return ResponseEntity.ok(reminderService.toggleReminder(reminderId));
+    }
+
+    @DeleteMapping("/{reminderId}")
+    public ResponseEntity<Void> deleteReminder(@PathVariable Long reminderId) {
+        reminderService.deleteReminder(reminderId);
+        return ResponseEntity.noContent().build();
+    }
+    }

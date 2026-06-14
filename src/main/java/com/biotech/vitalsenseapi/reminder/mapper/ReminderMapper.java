@@ -15,6 +15,7 @@ public class ReminderMapper {
                 .reminderId(reminder.getReminderId())
                 .patientId(reminder.getPatient().getPatientId())
                 .medicationName(reminder.getMedicationName())
+                .purpose(reminder.getPurpose())
                 .frequency(reminder.getFrequency())
                 .reminderTime(reminder.getReminderTime())
                 .active(reminder.getActive())

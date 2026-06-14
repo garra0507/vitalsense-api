@@ -41,6 +41,9 @@ public class ReminderService {
                         .medicationName(
                                 request.getMedicationName()
                         )
+                        .purpose(
+                                request.getPurpose()
+                        )
                         .frequency(
                                 request.getFrequency()
                         )
@@ -55,6 +58,21 @@ public class ReminderService {
                 reminderRepository.save(reminder);
 
         return reminderMapper.toResponseDTO(savedReminder);
+    }
+
+    public ReminderResponseDTO toggleReminder(Long reminderId) {
+        Reminder reminder = reminderRepository.findById(reminderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reminder not found"));
+        
+        reminder.setActive(!reminder.getActive());
+        return reminderMapper.toResponseDTO(reminderRepository.save(reminder));
+    }
+
+    public void deleteReminder(Long reminderId) {
+        if (!reminderRepository.existsById(reminderId)) {
+            throw new ResourceNotFoundException("Reminder not found");
+        }
+        reminderRepository.deleteById(reminderId);
     }
 
     public List<ReminderResponseDTO>
