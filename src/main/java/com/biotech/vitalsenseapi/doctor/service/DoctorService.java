@@ -4,6 +4,7 @@ import com.biotech.vitalsenseapi.doctor.dto.DoctorRegisterRequest;
 import com.biotech.vitalsenseapi.doctor.dto.DoctorResponse;
 import com.biotech.vitalsenseapi.doctor.mapper.DoctorMapper;
 import com.biotech.vitalsenseapi.doctor.model.Doctor;
+import com.biotech.vitalsenseapi.doctor.model.Specialty;
 import com.biotech.vitalsenseapi.doctor.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,12 @@ public class DoctorService {
     private final DoctorMapper doctorMapper;
 
     public List<DoctorResponse> searchDoctors(
-            String specialty
+            Specialty specialty
     ) {
 
         List<Doctor> doctors =
                 doctorRepository
-                        .findBySpecialtyContainingIgnoreCase(
+                        .findBySpecialty(
                                 specialty
                         );
 

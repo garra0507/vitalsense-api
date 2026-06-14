@@ -17,7 +17,8 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long doctorId;
 
-    private String specialty;
+    @Enumerated(EnumType.STRING)
+    private Specialty specialty;
 
     private Integer yearsOfExperience;
 

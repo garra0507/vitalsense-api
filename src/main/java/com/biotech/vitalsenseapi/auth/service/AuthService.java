@@ -13,6 +13,7 @@ import com.biotech.vitalsenseapi.doctor.repository.DoctorRepository;
 import com.biotech.vitalsenseapi.patient.dto.PatientRegisterRequest;
 import com.biotech.vitalsenseapi.patient.model.Patient;
 import com.biotech.vitalsenseapi.patient.repository.PatientRepository;
+import com.biotech.vitalsenseapi.shared.exception.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -86,10 +87,10 @@ public class AuthService {
 
     public String login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new AuthenticationException("Usuario no encontrado"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Contraseña incorrecta");
+            throw new AuthenticationException("Contraseña incorrecta");
         }
 
         return jwtService.generateToken(user.getEmail());
@@ -98,7 +99,7 @@ public class AuthService {
     public UserResponse getMe() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new AuthenticationException("Usuario no encontrado"));
 
         Long profileId = null;
         if (user.getRole() == Role.PATIENT) {

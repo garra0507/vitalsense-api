@@ -1,5 +1,6 @@
 package com.biotech.vitalsenseapi.doctor.dto;
 
+import com.biotech.vitalsenseapi.doctor.model.Specialty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ public class DoctorResponse {
 
     private String fullName;
 
-    private String specialty;
+    private Specialty specialty;
 
     private Integer yearsOfExperience;
 
