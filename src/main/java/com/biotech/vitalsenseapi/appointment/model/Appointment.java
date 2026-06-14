@@ -36,7 +36,7 @@ public class Appointment {
     private AppointmentStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PENDING'")
     private AppointmentPaymentStatus paymentStatus;
 
     @Column
