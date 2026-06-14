@@ -16,6 +16,8 @@ public class ReminderResponseDTO {
 
     private String medicationName;
 
+    private String purpose;
+
     private String frequency;
 
     private LocalTime reminderTime;
