@@ -1,5 +1,6 @@
 package com.biotech.vitalsenseapi.doctor.dto;
 
+import com.biotech.vitalsenseapi.doctor.model.Specialty;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -24,8 +25,8 @@ public class DoctorRegisterRequest {
     private String lastName;
 
     // Doctor profile info
-    @NotBlank(message = "Specialty is required")
-    private String specialty;
+    @NotNull(message = "Specialty is required")
+    private Specialty specialty;
 
     @Min(value = 0, message = "Years of experience cannot be negative")
     private Integer yearsOfExperience;

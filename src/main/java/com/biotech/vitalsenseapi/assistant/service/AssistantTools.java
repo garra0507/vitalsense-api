@@ -6,6 +6,7 @@ import com.biotech.vitalsenseapi.appointment.dto.AvailabilityResponse;
 import com.biotech.vitalsenseapi.appointment.service.AppointmentService;
 import com.biotech.vitalsenseapi.appointment.service.AvailabilityService;
 import com.biotech.vitalsenseapi.doctor.dto.DoctorResponse;
+import com.biotech.vitalsenseapi.doctor.model.Specialty;
 import com.biotech.vitalsenseapi.doctor.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class AssistantTools {
     /**
      * Search for doctors by their specialty.
      */
-    public List<DoctorResponse> searchDoctors(String specialty) {
+    public List<DoctorResponse> searchDoctors(Specialty specialty) {
         return doctorService.searchDoctors(specialty);
     }
 
