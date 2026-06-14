@@ -2,6 +2,7 @@ package com.biotech.vitalsenseapi.appointment.controller;
 
 import com.biotech.vitalsenseapi.appointment.dto.AvailabilityRequest;
 import com.biotech.vitalsenseapi.appointment.dto.AvailabilityResponse;
+import com.biotech.vitalsenseapi.appointment.dto.BatchAvailabilityRequest;
 import com.biotech.vitalsenseapi.appointment.service.AvailabilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,13 @@ import java.util.List;
 public class AvailabilityController {
 
     private final AvailabilityService availabilityService;
+
+    @PostMapping("/batch")
+    public String createBatchAvailability(
+            @RequestBody BatchAvailabilityRequest request
+    ) {
+        return availabilityService.createBatchAvailability(request);
+    }
 
     @PostMapping
     public String createAvailability(
