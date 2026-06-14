@@ -16,6 +16,8 @@ public class AppointmentMapper {
         response.setAppointmentId(appointment.getAppointmentId());
         response.setPatientId(appointment.getPatient().getPatientId());
         response.setDoctorId(appointment.getDoctor().getDoctorId());
+        response.setDoctorName(appointment.getDoctor().getUser().getFirstName() + " " + appointment.getDoctor().getUser().getLastName());
+        response.setDoctorSpecialty(appointment.getDoctor().getSpecialty());
         response.setScheduledDate(appointment.getScheduledDate());
         response.setStatus(appointment.getStatus());
         response.setMeetLink(appointment.getMeetLink());
