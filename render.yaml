@@ -16,15 +16,31 @@ services:
     healthCheckPath: /v3/api-docs
 
     envVars:
-      # --- Perfil de Spring: activa application-prod.yaml ---
       - key: SPRING_PROFILES_ACTIVE
         value: prod
+      
+      # Forzar puerto 8080 para evitar fallos de escaneo en Render
+      - key: PORT
+        value: 8080
 
-      # --- Conexion a la base de datos (se toman de vitalsense-db) ---
-      - key: DB_URL
+      # --- Conexion a la base de datos (Construcción manual para JDBC) ---
+      - key: DB_HOST
         fromDatabase:
           name: vitalsense-db
-          property: connectionString
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: vitalsense-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: vitalsense-db
+          property: database
+      
+      # Unión de variables para formar el formato JDBC correcto
+      - key: DB_URL
+        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+
       - key: DB_USERNAME
         fromDatabase:
           name: vitalsense-db
@@ -34,7 +50,5 @@ services:
           name: vitalsense-db
           property: password
 
-      # --- Origenes permitidos para CORS (tu frontend en Netlify) ---
-      # Render te pedirá este valor en el dashboard al aplicar el Blueprint.
       - key: CORS_ALLOWED_ORIGINS
         sync: false
