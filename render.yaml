@@ -1,16 +1,26 @@
-services:
-  - type: db
-    name: vitalsense-db
-    runtime: postgres
+# ============================================================================
+#  Render Blueprint para VitalSense API
+# ----------------------------------------------------------------------------
+databases:
+  - name: vitalsense-db
+    databaseName: vitalsense_db
+    user: vitalsense
     plan: free
 
+services:
   - type: web
     name: vitalsense-api
     runtime: docker
+    dockerfilePath: ./Dockerfile
     plan: free
+    healthCheckPath: /v3/api-docs
+
     envVars:
+      # --- Perfil de Spring: activa application-prod.yaml ---
       - key: SPRING_PROFILES_ACTIVE
         value: prod
+
+      # --- Conexion a la base de datos (se toman de vitalsense-db) ---
       - key: DB_URL
         fromDatabase:
           name: vitalsense-db
@@ -23,3 +33,8 @@ services:
         fromDatabase:
           name: vitalsense-db
           property: password
+
+      # --- Origenes permitidos para CORS (tu frontend en Netlify) ---
+      # Render te pedirá este valor en el dashboard al aplicar el Blueprint.
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
