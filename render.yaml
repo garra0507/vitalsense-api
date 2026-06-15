@@ -23,7 +23,7 @@ services:
       - key: PORT
         value: 8080
 
-      # --- Conexion a la base de datos (Construcción manual para JDBC) ---
+      # --- Conexion a la base de datos ---
       - key: DB_HOST
         fromDatabase:
           name: vitalsense-db
@@ -36,11 +36,6 @@ services:
         fromDatabase:
           name: vitalsense-db
           property: database
-      
-      - key: DB_URL
-        fromDatabase:
-          name: vitalsense-db
-          property: connectionString
 
       - key: DB_USERNAME
         fromDatabase:
