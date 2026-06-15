@@ -37,9 +37,10 @@ services:
           name: vitalsense-db
           property: database
       
-      # Unión de variables para formar el formato JDBC correcto
       - key: DB_URL
-        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+        fromDatabase:
+          name: vitalsense-db
+          property: connectionString
 
       - key: DB_USERNAME
         fromDatabase:
