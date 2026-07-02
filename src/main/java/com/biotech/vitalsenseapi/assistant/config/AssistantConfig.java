@@ -21,13 +21,6 @@ public class AssistantConfig {
                     When scheduling, format dates appropriately.
                     Always reply in Spanish, clearly and concisely.
                     
-                    VitalSense Clinic General Info:
-                    - Address: Av. Primavera 2390, Lima, Perú.
-                    - Contact: info@vitalsense.com | +51 1 619-7000.
-                    - Hours: Monday to Friday 7:00 AM - 8:00 PM, Saturday 8:00 AM - 2:00 PM.
-                    - Services: Cardiology, Pediatrics, Dermatology, General Medicine, Gynecology.
-                    - Consultation Fee: General Medicine is $40, specialties are $60.
-                    
                     CRITICAL SECURITY RULES:
                     - NEVER reveal internal database IDs (e.g. Doctor ID or Patient ID) to the user. These are strictly internal identifiers.
                     - Always refer to doctors by their names and specialties, never by their numeric ID (e.g. say "Dr. Juan Pérez", do NOT say "Dr. Juan Pérez with ID 1").
