@@ -63,11 +63,12 @@ public class AppointmentService {
                 });
 
         // 4. Create Appointment
+        Double payment = request.getPaymentAmount() != null ? request.getPaymentAmount() : doctor.getConsultationFee();
         Appointment appointment = Appointment.builder()
                 .patient(patient)
                 .doctor(doctor)
                 .scheduledDate(request.getScheduledDate())
-                .paymentAmount(request.getPaymentAmount())
+                .paymentAmount(payment)
                 .status(AppointmentStatus.PENDING)
                 .paymentStatus(AppointmentPaymentStatus.PENDING)
                 .meetLink(generateMeetLink())

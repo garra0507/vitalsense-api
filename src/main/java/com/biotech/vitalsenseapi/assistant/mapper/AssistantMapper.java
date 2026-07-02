@@ -9,7 +9,7 @@ public class AssistantMapper {
 
     public ChatResponse toChatResponse(ChatMessage message) {
         return ChatResponse.builder()
-                .response(message.getContent())
+                .reply(message.getContent())
                 .build();
     }
 }
