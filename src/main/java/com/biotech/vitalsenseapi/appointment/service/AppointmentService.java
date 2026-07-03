@@ -166,6 +166,27 @@ public class AppointmentService {
         return appointmentMapper.toResponseDTO(updatedAppointment);
     }
 
+    @Transactional
+    public AppointmentResponseDTO completeAppointment(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + appointmentId));
+
+        checkAppointmentAccess(appointment);
+
+        if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
+            throw new ValidationException("Appointment is already completed.");
+        }
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new ValidationException("Cancelled appointments cannot be completed.");
+        }
+
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        Appointment updatedAppointment = appointmentRepository.save(appointment);
+
+        return appointmentMapper.toResponseDTO(updatedAppointment);
+    }
+
     public List<CalendarAppointmentDTO> getAppointmentsCalendarByDoctor(Long doctorId) {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
