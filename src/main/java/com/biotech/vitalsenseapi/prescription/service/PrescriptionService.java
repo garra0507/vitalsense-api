@@ -62,4 +62,10 @@ public class PrescriptionService {
 
         return prescriptionMapper.toResponseDTO(savedPrescription);
     }
+
+    public PrescriptionResponseDTO getPrescriptionByAppointmentId(Long appointmentId) {
+        Prescription prescription = prescriptionRepository.findByAppointmentAppointmentId(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Prescription not found for appointment id: " + appointmentId));
+        return prescriptionMapper.toResponseDTO(prescription);
+    }
 }
