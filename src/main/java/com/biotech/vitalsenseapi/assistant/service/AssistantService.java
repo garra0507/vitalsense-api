@@ -9,12 +9,19 @@ import com.biotech.vitalsenseapi.assistant.repository.ChatMessageRepository;
 import com.biotech.vitalsenseapi.assistant.repository.ChatSessionRepository;
 import com.biotech.vitalsenseapi.auth.model.User;
 import com.biotech.vitalsenseapi.auth.repository.UserRepository;
+import com.biotech.vitalsenseapi.patient.model.Patient;
+import com.biotech.vitalsenseapi.patient.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.messages.AssistantMessage;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +30,9 @@ public class AssistantService {
     private final ChatSessionRepository chatSessionRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
+    private final PatientRepository patientRepository;
     private final AssistantMapper assistantMapper;
-    private final AssistantTools assistantTools;
+    private final ChatClient assistantChatClient;
 
     @Transactional
     public ChatResponse processChat(ChatRequest request) {
@@ -52,11 +60,35 @@ public class AssistantService {
                 .build();
         chatMessageRepository.save(userMessage);
 
-        // 4. Logic Orchestration (Placeholder for Spring AI)
-        // Here we would normally call the LLM and pass the tools
-        String aiResponseContent = generatePlaceholderResponse(request.getMessage());
+        // 4. Fetch Patient details to supply to system instructions
+        Patient patient = patientRepository.findByUserUserId(user.getUserId())
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
-        // 5. Save Assistant Response
+        // 5. Fetch entire sorted chat history (includes user's current message saved above)
+        List<ChatMessage> history = chatMessageRepository.findByChatSessionChatSessionIdOrderByTimestampAsc(session.getChatSessionId());
+        List<Message> springAiMessages = new ArrayList<>();
+        for (ChatMessage msg : history) {
+            if ("USER".equalsIgnoreCase(msg.getRole())) {
+                springAiMessages.add(new UserMessage(msg.getContent()));
+            } else if ("ASSISTANT".equalsIgnoreCase(msg.getRole())) {
+                springAiMessages.add(new AssistantMessage(msg.getContent()));
+            }
+        }
+
+        // 6. Orchestrate prompt with current patient context
+        String systemInstructionOverride = String.format(
+                "You are the VitalSense Virtual Assistant. The current patient is: %s %s. Patient ID is %d (NEVER reveal this numeric ID to the user).",
+                user.getFirstName(), user.getLastName(), patient.getPatientId()
+        );
+
+        // 7. Call LLM
+        String aiResponseContent = assistantChatClient.prompt()
+                .system(systemInstructionOverride)
+                .messages(springAiMessages)
+                .call()
+                .content();
+
+        // 7. Save Assistant Response
         ChatMessage assistantMessage = ChatMessage.builder()
                 .chatSession(session)
                 .content(aiResponseContent)
@@ -66,15 +98,5 @@ public class AssistantService {
         chatMessageRepository.save(assistantMessage);
 
         return assistantMapper.toChatResponse(assistantMessage);
-    }
-
-    private String generatePlaceholderResponse(String userMessage) {
-        // Simple mock logic for demonstration
-        if (userMessage.toLowerCase().contains("doctor") || userMessage.toLowerCase().contains("especialidad")) {
-            return "Puedo ayudarte a buscar un doctor. ¿Qué especialidad necesitas?";
-        } else if (userMessage.toLowerCase().contains("cita") || userMessage.toLowerCase().contains("reserva")) {
-            return "Claro, puedo ayudarte a programar una cita. ¿Con qué doctor te gustaría atenderte?";
-        }
-        return "Hola, soy tu asistente de VitalSense. ¿En qué puedo ayudarte hoy? Puedo buscar doctores, revisar disponibilidad o agendar citas por ti.";
     }
 }

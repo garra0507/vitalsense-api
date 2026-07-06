@@ -72,4 +72,10 @@ public class AppointmentController {
                 appointmentService.rescheduleAppointment(id, request)
         );
     }
+
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<AppointmentResponseDTO> completeAppointment(@PathVariable Long id) {
+        return ResponseEntity.ok(appointmentService.completeAppointment(id));
+    }
+
 }

@@ -25,4 +25,11 @@ public class PrescriptionController {
                 HttpStatus.CREATED
         );
     }
+
+    @GetMapping("/appointment/{appointmentId}")
+    public ResponseEntity<PrescriptionResponseDTO> getPrescriptionByAppointmentId(
+            @PathVariable Long appointmentId
+    ) {
+        return ResponseEntity.ok(prescriptionService.getPrescriptionByAppointmentId(appointmentId));
+    }
 }
