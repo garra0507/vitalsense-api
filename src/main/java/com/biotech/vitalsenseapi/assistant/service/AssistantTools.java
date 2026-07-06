@@ -27,7 +27,7 @@ public class AssistantTools {
     /**
      * Search for doctors by their specialty.
      */
-    @Tool(description = "Search for available doctors by their specialty (e.g., CARDIOLOGY, PEDIATRICS, DERMATOLOGY, GENERAL_MEDICINE, GYNECOLOGY).")
+    @Tool(description = "Search for available doctors by their medical specialty. You MUST use one of these exact uppercase Spanish values for the specialty parameter: MEDICINA_GENERAL, CARDIOLOGIA, PEDIATRIA, DERMATOLOGIA, GINECOLOGIA_Y_OBSTETRICIA, OFTALMOLOGIA, TRAUMATOLOGIA_Y_ORTOPEDIA, PSIQUIATRIA, NEUROLOGIA, ENDOCRINOLOGIA, GASTROENTEROLOGIA, UROLOGIA, OTORRINOLARINGOLOGIA, ONCOLOGIA, ODONTOLOGIA.")
     public List<DoctorResponse> searchDoctors(
             @ToolParam(description = "The medical specialty to search for") Specialty specialty) {
         return doctorService.searchDoctors(specialty);
