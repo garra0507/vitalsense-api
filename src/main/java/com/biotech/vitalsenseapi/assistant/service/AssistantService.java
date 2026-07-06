@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +35,6 @@ public class AssistantService {
     private final AssistantMapper assistantMapper;
     private final ChatClient assistantChatClient;
 
-    @Transactional
     public ChatResponse processChat(ChatRequest request) {
         // 1. Get Current User
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -51,14 +51,8 @@ public class AssistantService {
                     return chatSessionRepository.save(newSession);
                 });
 
-        // 3. Save User Message
-        ChatMessage userMessage = ChatMessage.builder()
-                .chatSession(session)
-                .content(request.getMessage())
-                .role("USER")
-                .timestamp(LocalDateTime.now())
-                .build();
-        chatMessageRepository.save(userMessage);
+        // 3. Save User Message immediately in its own transaction
+        saveMessage(session, request.getMessage(), "USER");
 
         // 4. Fetch Patient details to supply to system instructions
         Patient patient = patientRepository.findByUserUserId(user.getUserId())
@@ -81,22 +75,38 @@ public class AssistantService {
                 user.getFirstName(), user.getLastName(), patient.getPatientId()
         );
 
-        // 7. Call LLM
-        String aiResponseContent = assistantChatClient.prompt()
-                .system(systemInstructionOverride)
-                .messages(springAiMessages)
-                .call()
-                .content();
+        // 7. Call LLM — wrapped in try/catch so tool errors never rollback saved messages
+        String aiResponseContent;
+        try {
+            aiResponseContent = assistantChatClient.prompt()
+                    .system(systemInstructionOverride)
+                    .messages(springAiMessages)
+                    .call()
+                    .content();
+            if (aiResponseContent == null) aiResponseContent = "Lo siento, no pude procesar tu solicitud en este momento. Por favor intenta de nuevo.";
+        } catch (Exception e) {
+            aiResponseContent = "Lo siento, ocurrió un error al procesar tu solicitud. Por favor intenta de nuevo.";
+        }
 
-        // 7. Save Assistant Response
-        ChatMessage assistantMessage = ChatMessage.builder()
-                .chatSession(session)
-                .content(aiResponseContent)
-                .role("ASSISTANT")
-                .timestamp(LocalDateTime.now())
-                .build();
-        chatMessageRepository.save(assistantMessage);
+        // 8. Save Assistant Response immediately in its own transaction
+        ChatMessage assistantMessage = saveMessage(session, aiResponseContent, "ASSISTANT");
 
         return assistantMapper.toChatResponse(assistantMessage);
+    }
+
+    /**
+     * Persists a chat message in its own independent transaction.
+     * Using REQUIRES_NEW ensures the write is committed immediately and
+     * is never rolled back by any exception in the calling method.
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ChatMessage saveMessage(ChatSession session, String content, String role) {
+        ChatMessage message = ChatMessage.builder()
+                .chatSession(session)
+                .content(content)
+                .role(role)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return chatMessageRepository.save(message);
     }
 }
